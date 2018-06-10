@@ -24,12 +24,10 @@ ArrayList sensorDataArray;
 float svgHeight=140,svgWidth=100;
 final String host = "iot.cht.com.tw";
 final int port = 1883;
-final String apiKey = "DKZ05PSWHBYF2KX929";  // 
-//final String apiKey = "DKXWBU4X490GZB0AT7";  //Test Device KEY
+final String apiKey = "";  //Fill your api key here
+//final String apiKey = "";  //Test Device KEY
 //final String topic = "";
-String deviceId = "5355373363"; //Device ID of power meter
-//String deviceId = "5584414030";//Test Device ID
-//String sensorId = "instantaneousVA";
+String deviceId = ""; //Device ID 
 String sensorId = "switch";
 String topicString = "/v1/device/" + deviceId + "/sensor/+/rawdata";
 String sensor_id[]={"instantaneousVA","lastGasp","event","current_date_and_time"
