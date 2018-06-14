@@ -18,21 +18,24 @@ PImage powerImg;
 Serial serialPort; // Create object from Serial class
 float val=0,pval=0; // Data received from the serial port
 boolean ledStatus=false;
-SensorData sensorData;
-ArrayList sensorDataArray;
+//SensorData sensorData;
+//ArrayList sensorDataArray;
+ArrayList<SensorData> sensors;
 
 float svgHeight=140,svgWidth=100;
 final String host = "iot.cht.com.tw";
 final int port = 1883;
-final String apiKey = "";  //Fill your api key here
+final String apiKey = "DKUR1ZHZ09MCY2ETSU";  //Fill your api key here
 //final String apiKey = "";  //Test Device KEY
 //final String topic = "";
-String deviceId = ""; //Device ID 
-String sensorId = "switch";
+String deviceId = "5651137539"; //Device ID 
 String topicString = "/v1/device/" + deviceId + "/sensor/+/rawdata";
-String sensor_id[]={"instantaneousVA","lastGasp","event","current_date_and_time"
-                    ,"LoadProfile","Midnight","Alt"};
-//String sensor_id[]={"Humidity","switch","temperature"};                    
+//String sensorId[]={"instantaneous_kva","lastGasp","event","current_date_and_time",
+//                    "instantaneous_kw","LoadProfile","Midnight","Alt","tpcDelTotalWh"};
+String sensorId[]={"instantaneous_kva","instantaneous_kw","tpcDelTotalWh","current_date_and_time"};
+
+//current_date_and_time: 電表時間, instantaneous_kva:瞬時功率,instantaneous_kw: 瞬時需量,tpcDelTotalWh:總瓦時
+//String sensorId[]={"Humidity","switch","temperature"};                    
 
 void setup() {
   //carShape=loadShape("liakad-car-front.svg");
@@ -42,8 +45,12 @@ void setup() {
   //textFont(font,20);
   //loadFont("/usr/share/fonts/NotoSansCJK-Regular/NotoSansCJK-Regular.ttc");
   powerImg=loadImage("power-thumb.png");
-  sensorData=new SensorData();
-  size(800, 600);
+  sensors=new ArrayList<SensorData>();
+  for(String str:sensorId){
+    sensors.add(new SensorData(str));
+    println(str+" added");
+  }
+  size(1024, 768);
   frameRate(30);
   strokeWeight(2);
   //String arduinoPort = Serial.list()[2];
@@ -61,16 +68,18 @@ void draw(){
   
   background(#FFFFFF);
   imageMode(CENTER);
-  image(powerImg,width/2,height/2,powerImg.width/4,powerImg.height/4);
+  //image(powerImg,width/2,height/2,powerImg.width/4,powerImg.height/4);
   textAlign(CENTER);
-  textSize(20);
+  textSize(15);
   fill(#030303);
-  //if(sensorData.sensorId.toString().equals("instantaneousVA")){
-    text("DEVICE ID:"+sensorData.deviceId,width/2,height/2+powerImg.height/8+20);
-    text("SENSOR ID:"+sensorData.sensorId,width/2,height/2+powerImg.height/8+40);
-    text("VALUE:"+sensorData.value,width/2,height/2+powerImg.height/8+60);
-  //}
-  
+  for(int i=0;i<sensors.size();i++){
+    SensorData s=sensors.get(i);
+    if(i<5)
+      s.render(powerImg.width/5,powerImg.height/5,(i%3+1)*width/4,height/5,powerImg);
+    else
+      s.render(powerImg.width/5,powerImg.height/5,(i%3+1)*width/4,height*3/5,powerImg);
+  }
+
 }
 
 
@@ -84,13 +93,23 @@ void LedControlMqttTest() throws Exception{
         String m = new String(message.getPayload());
         System.out.println(m);
         JSONObject json=parseJSONObject(m); 
-        if(json.getString("id").equals("instantaneousVA")){
-          sensorData.sensorId=new StringBuffer(json.getString("id"));
-          sensorData.deviceId=new StringBuffer(json.getString("deviceId"));
-          JSONArray jsonArray=json.getJSONArray("value");
-          println(jsonArray.toString());
-          sensorData.value=new StringBuffer(jsonArray.get(0).toString());
+        for(int i=0;i<sensors.size();i++){
+          SensorData s=sensors.get(i);
+          print(json.getString("id"));
+          println(" vs."+ s.sensorId);
+          if(json.getString("id").equals(s.sensorId.toString())){
+            println("matched");
+            //s.deviceId=
+            //sensorData.sensorId=new StringBuffer(json.getString("id"));
+            s.deviceId=new StringBuffer(json.getString("deviceId"));
+            JSONArray jsonArray=json.getJSONArray("value");
+            //println(jsonArray.toString());
+            s.value=new StringBuffer(jsonArray.get(0).toString());
+            sensors.set(i,s);
+          }
+          
         }
+      
         
         
       }
@@ -112,7 +131,7 @@ void LedControlMqttTest() throws Exception{
     
     //client.subscribe("/v1/device/" + deviceId + "/sensor/" + sensorId + "/rawdata");
     ArrayList<String> topic_array=new ArrayList();
-    for(String sid:sensor_id){
+    for(String sid:sensorId){
         topic_array.add("/v1/device/" +deviceId + "/sensor/"+ sid + "/rawdata");
         
     }
@@ -128,8 +147,8 @@ class SensorData{
    StringBuffer deviceId;
    StringBuffer time;
    StringBuffer value;
-   SensorData(){
-      sensorId=new StringBuffer("--");
+   SensorData(String sid){
+      sensorId=new StringBuffer(sid);
       deviceId=new StringBuffer("--");
       time=new StringBuffer("--");
       value=new StringBuffer("--");
@@ -150,4 +169,20 @@ class SensorData{
      sensorId.replace(0,value.length()-1,v);
      return this;
    }
+   
+   void render(int sizeX,int sizeY,int posX,int posY,PImage img){
+
+    image(img,posX,posY,sizeX,sizeY);
+    text("DEVICE ID:"+deviceId,posX,posY+sizeY/2+sizeY/5);
+    text("SENSOR ID:"+sensorId,posX,posY+sizeY/2+sizeY*2/5);
+    text("VALUE:"+value,posX,posY+sizeY/2+sizeY*3/5);
+   }
 }
+
+//class Sensor
+//{
+//    Sensor(){
+      
+//    }
+  
+//}
