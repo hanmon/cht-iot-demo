@@ -25,10 +25,10 @@ ArrayList<SensorData> sensors;
 float svgHeight=140,svgWidth=100;
 final String host = "iot.cht.com.tw";
 final int port = 1883;
-final String apiKey = "DKUR1ZHZ09MCY2ETSU";  //Fill your api key here
+final String apiKey = "";  //Fill your api key here
 //final String apiKey = "";  //Test Device KEY
 //final String topic = "";
-String deviceId = "5651137539"; //Device ID 
+String deviceId = ""; //Device ID 
 String topicString = "/v1/device/" + deviceId + "/sensor/+/rawdata";
 //String sensorId[]={"instantaneous_kva","lastGasp","event","current_date_and_time",
 //                    "instantaneous_kw","LoadProfile","Midnight","Alt","tpcDelTotalWh"};
