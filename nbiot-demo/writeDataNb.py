@@ -3,14 +3,14 @@ import serial
 import Adafruit_DHT
 import time
 
-DEVICE_ID='5993646118'
-DEVICE_KEY='DK133ZH2M79WXX2WU0'
+DEVICE_ID=''
+DEVICE_KEY=''
 SENSOR_NAME=Adafruit_DHT.DHT22
 SENSOR_ID='temperature'
 pin=24
-ipa='61.216.74.128'
-port='5683'
-apn='internet.iot'
+ipa=''
+port=''
+apn=''
 def getSensorValue():
     humidity, temperature = Adafruit_DHT.read_retry(SENSOR_NAME, pin)
     if humidity is not None and temperature is not None:
