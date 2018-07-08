@@ -27,7 +27,7 @@ void setup() {
   size(440, 440);
   frameRate(30);
   strokeWeight(2);
-  String arduinoPort = Serial.list()[2];
+  String arduinoPort = Serial.list()[0];
   serialPort = new Serial(this, arduinoPort, 9600);
   background(#8CFCF2);
 }
