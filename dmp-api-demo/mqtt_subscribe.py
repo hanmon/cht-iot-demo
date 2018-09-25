@@ -7,13 +7,18 @@ import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
 import paho.mqtt.subscribe as subscribe
 import sys
-#Change value of my_headers to your project Key
-DEVICE_KEY='YOUR_KEY'
-DEVICE_ID=YOUR_ID
+import configparser
+#Read project key from config file(config.ini)
+config=configparser.ConfigParser()
+config.read('config.ini')
+PROJECT_KEY=config['KEY']['PROJECT_KEY']
+DEVICE_KEY=config['KEY']['DEVICE_KEY']
+DEVICE_ID=config['ID']['DEVICE_ID']
+
 my_headers = {'CK':DEVICE_KEY}
-SENSOR_ID="button"
+SENSOR_ID='led'
 hostname="iot.cht.com.tw"
-topic="/v1/device/5601185176/sensor/button/rawdata"
+topic='/v1/device/'+DEVICE_ID+'/sensor/'+SENSOR_ID+'/rawdata'
 print(topic)
 auth={
         'username':DEVICE_KEY,
